@@ -1,0 +1,76 @@
+static	inline	unsigned long long	mul_mod(unsigned long long a, unsigned long long b, unsigned long long m) {
+    unsigned long long r=0;
+    while (b) {
+        if (b & 1) {
+            unsigned long long r2 = r + a;
+            if (r2 < r) r2 -= m;
+            r = r2 % m;
+        }
+        b >>= 1;
+        if (b) {
+            unsigned long long a2 = a + a;
+            if (a2 < a) a2 -= m;
+            a = a2 % m;
+        }
+    }
+    return r;
+}
+static inline unsigned long long pow_mod(unsigned long long a, unsigned long long b, unsigned long long m) {
+    unsigned long long r=1;
+    while (b) {
+        if (b&1) r=mul_mod(r,a,m);
+        b>>=1;
+        if (b) a=mul_mod(a,a,m);
+    }
+    return r;
+}
+unsigned sprp(unsigned long long n, unsigned long long a) {
+    unsigned long long d=n-1;
+    unsigned char s=0;
+    while (!(d & 0xff)) { d>>=8; s+=8; }
+    if (!(d & 0xf)) { d>>=4; s+=4; }
+    if (!(d & 0x3)) { d>>=2; s+=2; }
+    if (!(d & 0x1)) { d>>=1; s+=1; }
+    unsigned long long b=pow_mod(a,d,n);
+    if ((b==1) || (b==(n-1))) return 1;
+    unsigned char r;
+    for (r=1; r<s; r++) {
+        b=mul_mod(b,b,n);
+        if (b<=1) return 0;
+        if (b==(n-1)) return 1;
+    }
+    return 0;
+}
+unsigned is_prime(unsigned long long n) {
+    if (n<2) return 0;
+    if (n<4) return 1;
+    if (!(n&1)) return 0;
+    if (!sprp(n,2)) return 0;
+    if (n<2047) return 1;
+    if (!sprp(n,3)) return 0;
+    if (n<1373653) return 1;
+    if (!sprp(n,5)) return 0;
+    if (n<25326001) return 1;
+    if (!sprp(n,7)) return 0;
+    if (n==3215031751) return 0;
+    if (n<118670087467ULL) return 1;
+    if (!sprp(n,11)) return 0;
+    if (n<2152302898747ULL) return 1;
+    if (!sprp(n,13)) return 0;
+    if (n<3474749660383ULL) return 1;
+    if (!sprp(n,17)) return 0;
+    if (n<341550071728321ULL) return 1;
+    if (!sprp(n,19)) return 0;
+    if (!sprp(n,23)) return 0;
+    if (n<3825123056546413051ULL) return 1;
+    if (!sprp(n,29)) return 0;
+    if (!sprp(n,31)) return 0;
+    if (!sprp(n,37)) return 0;
+    return 1;
+}
+#include	<stdio.h>
+int	main(void){
+	for(unsigned long long i=0;	i<1024;	i++)	if(is_prime(i))	printf("%llu ",i);
+	return	0;
+}
+
