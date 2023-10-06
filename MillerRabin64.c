@@ -41,24 +41,21 @@ unsigned sprp(unsigned long long n, unsigned long long a) {
     }
     return 0;
 }
+
 unsigned is_prime(unsigned long long n) {
+    unsigned long long primes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
+    const unsigned long long n_primes = sizeof(primes)/sizeof(primes[0]);
+    int i;
     if (n<2||!(n&1)) return 0;
     if (n<4) return 1;
     if (!sprp(n,2)) return 0;
     if (n<2047) return 1;
-    if (!sprp(n,3)) return 0;
-    if (!sprp(n,5)) return 0;
-    if (!sprp(n,7)) return 0;
-    if (!sprp(n,11)) return 0;
-    if (!sprp(n,13)) return 0;
-    if (!sprp(n,17)) return 0;
-    if (!sprp(n,19)) return 0;
-    if (!sprp(n,23)) return 0;
-    if (!sprp(n,29)) return 0;
-    if (!sprp(n,31)) return 0;
-    if (!sprp(n,37)) return 0;
+    for (i=1; i<n_primes; i++)
+        if(!sprp(n, primes[i]))
+            return 0;
     return 1;
 }
+
 #include	<stdio.h>
 int	main(void){
 	for(unsigned long long i=0;	i<1024;	i++)	if(is_prime(i))	printf("%llu ",i);
